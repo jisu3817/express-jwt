@@ -11,6 +11,9 @@ const output = {
   // //   const payload = jwt.verifyToken(token);
   // //   return res.json(payload);
   },
+  login: (req, res) => {
+    res.render('login');
+},
 }
 
 const process = {
