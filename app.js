@@ -1,7 +1,8 @@
 "use strict";
 const express = require('express');
 const app = express();
-const indexRouter = require('./routes/home/index');
+const cookieParser = require('cookie-parser');
+const indexRouter = require('./src/routes/home/index');
 
 app.set('views', './src/views');
 app.set('view engine', 'ejs');

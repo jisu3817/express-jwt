@@ -12,11 +12,11 @@ class User {
     try {
       const { id, password } = await UserStorage.getUserInfo(user.id) || {};
       
-      if (id && id === user.id) {
-        if (bcrypt.compareSync(user.password, password)) {
-          return { success: true};
-        }
-        return { succcess: false, msg: "비밀번호가 틀렸습니다." };
+      if (id) {
+          if (id === user.id && password === user.password) {
+          return { success: true };
+          }
+        return { success: false, msg: "비밀번호가 틀렸습니다." };
       }
       return { success: false, msg: "존재하지 않는 아이디입니다." };
     } catch (err) {

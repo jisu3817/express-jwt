@@ -1,42 +1,35 @@
 "use strict";
-
-const User = require("../../models/User");
-const UserStorage = require("../../models/UserStorage");
+const User = require("../../../models/User");
+const jwt = require("../../../models/jwt");
 
 const output = {
   home: (req, res) => {
-    res.send("루트 경로");
+  //   const token = req.cookies['token'];
+  //   if (token = undefined) {
+  //     return res.json("토큰이 존재하지 않습니다.");
+  //   }
+  // //   const payload = jwt.verifyToken(token);
+  // //   return res.json(payload);
   },
-
-  login: (req, res) => {
-    res.render("lgoin");
-  },
-};
+}
 
 const process = {
   login: async (req, res) => {
-    if (req.session.is_logined) {
-      res.json({});
-    } else {
-      const user = new User(req.body);
-      const response = await user.login();
-      
-      if (response.success) {
-        req.session.user = req.body.id;
-        req.session.is_logined = true;
-        req.session.save(() => {
-          res.status(200).json(response);
-        });
-      } 
-      else res.status(401).json(response);
-    };
-  },
-  
-  logout: (req, res) => {
-    req.session.destroy();
-    res.status(200).json({ success: true });
-  },
+  const user = new User(req.body);
+  const response = await user.login();
 
+  if (response.success) {
+    const token = jwt.createToken(req.body.id);
+    res.cookie('token', token, { httpOnly: true });
+    console.log(req.cookies);
+    response["token"] = token;
+    console.log(response);
+    res.status(200).json(response);
+  } 
+  else res.status(401).json(response);
+
+},
+  
   register: async (req, res) => {
     const user = new User(req.body);
     const response = await user.register();
@@ -46,16 +39,6 @@ const process = {
     } 
     else res.status(400).json(response);
   },
-  
-  check: async (req, res) => {
-    if (req.session.is_logined) {
-      const userId = req.session.user;
-      const user = await UserStorage.getUserInfo(userId);
-
-      res.status(200).json({success: true, name: user.id});
-    }
-    else res.status(400).json({success: false});
-  }
 };
 
 module.exports = {
