@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const bcrypt = require ('bcrypt');
 
 class userStorage {
   static getUserInfo(id) {
@@ -9,18 +10,21 @@ class userStorage {
           reject(err);
         }
           resolve(data[0]);
-          console.log(data[0]);
       });
     });
   };
 
   static save(userInfo) {
     return new Promise ((resolve, reject) => {
-      const query = "INSERT INTO users(id, name, password) VALUES(?, ?, ? )";
+      const saltRounds = 10;
+      bcrypt.hash(userInfo.password, saltRounds, (err, hash) => {
+        userInfo.password = hash;
+        const query = "INSERT INTO users(id, name, password) VALUES(?, ?, ? )";
         
-      db.query(query, [userInfo.id, userInfo.name, userInfo.password], (err) => {
-        if (err) reject(err);
-        resolve({ success: true });
+        db.query(query, [userInfo.id, userInfo.name, userInfo.password], (err) => {
+          if (err) reject(err);
+          resolve({ success: true, msg: " Sign Up Success!" });
+        });
       });
     });
   };

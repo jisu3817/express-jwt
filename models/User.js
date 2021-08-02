@@ -1,6 +1,6 @@
 "use strict";
 const UserStorage = require("./UserStorage");
-// const bcrypt = require ('bcrypt');
+const bcrypt = require ('bcrypt');
 
 class User {
   constructor(body) {
@@ -11,18 +11,18 @@ class User {
     const user = this.body;
     try {
       const { id, password } = await UserStorage.getUserInfo(user.id) || {};
-      
-      if (id) {
-          if (id === user.id && password === user.password) {
-          return { success: true };
-          }
-        return { success: false, msg: "비밀번호가 틀렸습니다." };
-      }
+
+      if (id && id === user.id) {
+        if (bcrypt.compareSync(user.password, password)) {
+          return { success: true};
+        };
+        return { succcess: false, msg: "비밀번호가 틀렸습니다." };
+      };
       return { success: false, msg: "존재하지 않는 아이디입니다." };
     } catch (err) {
         return { success: false, msg: err };
-    }
-  }
+    };
+  };
 
   async register() {
     const user = this.body;
@@ -30,9 +30,10 @@ class User {
       const response = await UserStorage.save(user);
       return response;
     } catch (err) {
-      return { success: false, msg: err };
-    }
-  }
+      return { success: false, msg: err.sqlMessage };
+    };
+  };
+
 }
 
 module.exports = User;
