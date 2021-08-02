@@ -1,6 +1,6 @@
 "use strict";
 const UserStorage = require("./UserStorage");
-const bcrypt = require ('bcrypt');
+// const bcrypt = require ('bcrypt');
 
 class User {
   constructor(body) {

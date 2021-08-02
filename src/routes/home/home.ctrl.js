@@ -4,8 +4,14 @@ const jwt = require("../../../models/jwt");
 
 const output = {
   home: (req, res) => {
-    
+    const token = req.cookies['token'];
+  if (token === undefined) {
+    return res.json('You don\'t have a token');
+  }
+  const payload = jwt.verifyToken(token);
+  res.json(payload);
   },
+
   login: (req, res) => {
     res.render('login');
 },
@@ -19,7 +25,8 @@ const process = {
   if (response.success) {
     const token = jwt.createToken(req.body.id);
     res.cookie('token', token, { httpOnly: true });
-    response["token"] = token;
+    response['token'] = token;
+    console.log(req.cookies['token']);
     res.status(200).json(response);
   } 
   else res.status(401).json(response);
