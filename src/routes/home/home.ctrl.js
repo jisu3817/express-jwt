@@ -1,6 +1,7 @@
 "use strict";
 const User = require("../../../models/User");
 const jwt = require("../../../models/jwt");
+// const UserStorage = require("../../../models/UserStorage");
 
 const output = {
   home: (req, res) => {
@@ -20,6 +21,7 @@ const output = {
 const process = {
   login: async (req, res) => {
     const user = new User(req.body);
+    console.log(req.body);
     const response = await user.login();
 
     if (response.success) {
@@ -33,7 +35,7 @@ const process = {
   
   register: async (req, res) => {
     const user = new User(req.body);
-    console.log(req.body);
+    console.log(req.body.password);
     const response = await user.register();
 
     if (response.success) {
@@ -43,6 +45,7 @@ const process = {
   },
 
   logout: (req, res) => {
+    res.clearCookie('token');
     res.status(200).json({ success: true });
   },
 };
